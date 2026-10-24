@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace HabitTracker.Models;
 
-namespace HabitTracker.Models
+internal class Habit
 {
-    internal class Habit
-    {
-    }
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Unit { get; set; } = "";
 }
