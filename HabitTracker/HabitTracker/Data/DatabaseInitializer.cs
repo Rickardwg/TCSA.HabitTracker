@@ -15,8 +15,25 @@ internal class DatabaseInitializer
         using SqliteTransaction transaction = connection.BeginTransaction();
         using SqliteCommand command = connection.CreateCommand();
 
+        CreateTables(connection);
+
         command.CommandText = "PRAGMA user_version;";
         long databaseVersion = (long)command.ExecuteScalar()!;
+
+        if (databaseVersion == 0)
+        {
+            SeedData(connection);
+
+            command.CommandText = "PRAGMA user_version = 1;";
+            command.ExecuteNonQuery();
+        }
+
+        transaction.Commit();
+    }
+
+    private static void CreateTables(SqliteConnection connection)
+    {
+        using SqliteCommand command = connection.CreateCommand();
 
         command.CommandText =
             """
@@ -41,58 +58,54 @@ internal class DatabaseInitializer
             );
             """;
         command.ExecuteNonQuery();
+    }
 
-        if (databaseVersion == 0)
+    private static void SeedData(SqliteConnection connection)
+    {
+        using SqliteCommand command = connection.CreateCommand();
+
+        Habit[] seedHabits =
+        [
+            new Habit { Name = "Walking", Unit = "steps" },
+            new Habit { Name = "Reading", Unit = "pages" },
+            new Habit { Name = "Drinking water", Unit = "glasses" },
+            new Habit { Name = "Push-ups", Unit = "repetitions" }
+        ];
+
+        DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
+        foreach (Habit habit in seedHabits)
         {
-            Habit[] seedHabits =
-            [
-                new Habit { Name = "Walking", Unit = "steps" },
-                new Habit { Name = "Reading", Unit = "pages" },
-                new Habit { Name = "Drinking water", Unit = "glasses" },
-                new Habit { Name = "Push-ups", Unit = "repetitions" }
-            ];
+            command.Parameters.Clear();
 
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-
-            foreach (Habit habit in seedHabits)
-            {
-                command.Parameters.Clear();
-
-                command.CommandText =
+            command.CommandText =
                 """
                 INSERT INTO Habits (Name, Unit)
                 VALUES ($name, $unit)
                 RETURNING Id;
                 """;
-                command.Parameters.AddWithValue("$name", habit.Name);
-                command.Parameters.AddWithValue("$unit", habit.Unit);
+            command.Parameters.AddWithValue("$name", habit.Name);
+            command.Parameters.AddWithValue("$unit", habit.Unit);
 
-                long habitId = (long)command.ExecuteScalar()!;
+            long habitId = (long)command.ExecuteScalar()!;
 
-                for (int dayOffset = 0; dayOffset < 25; dayOffset++)
-                {
-                    command.Parameters.Clear();
+            for (int dayOffset = 0; dayOffset < 25; dayOffset++)
+            {
+                command.Parameters.Clear();
 
-                    command.CommandText =
-                        """
-                        INSERT INTO HabitLogs (HabitId, Date, Quantity)
-                        VALUES ($habitId, $date, $quantity);
-                        """;
+                command.CommandText =
+                    """
+                    INSERT INTO HabitLogs (HabitId, Date, Quantity)
+                    VALUES ($habitId, $date, $quantity);
+                    """;
 
-                    double quantity = Random.Shared.Next(1, 101);
-                    command.Parameters.AddWithValue("$habitId", habitId);
-                    command.Parameters.AddWithValue("$date", today.AddDays(-dayOffset));
-                    command.Parameters.AddWithValue("$quantity", quantity);
+                double quantity = Random.Shared.Next(1, 101);
+                command.Parameters.AddWithValue("$habitId", habitId);
+                command.Parameters.AddWithValue("$date", today.AddDays(-dayOffset));
+                command.Parameters.AddWithValue("$quantity", quantity);
 
-                    command.ExecuteNonQuery();
-                }
+                command.ExecuteNonQuery();
             }
-
-            command.Parameters.Clear();
-            command.CommandText = "PRAGMA user_version = 1;";
-            command.ExecuteNonQuery();
         }
-
-        transaction.Commit();
     }
 }
