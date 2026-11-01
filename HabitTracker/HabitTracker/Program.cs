@@ -1,4 +1,5 @@
 using HabitTracker.Data;
 
-var databaseInitializer = new DatabaseInitializer();
+string connectionString = "Data Source=habittracker.db;Foreign Keys=True";
+var databaseInitializer = new DatabaseInitializer(connectionString);
 databaseInitializer.Initialize();
