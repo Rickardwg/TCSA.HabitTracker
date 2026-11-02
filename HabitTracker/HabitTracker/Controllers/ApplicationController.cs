@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using HabitTracker.Services;
+using HabitTracker.Views;
 
-namespace HabitTracker.Controllers
+namespace HabitTracker.Controllers;
+
+internal class ApplicationController(HabitTrackingService service, ConsoleView view)
 {
-    internal class ApplicationController
+    private readonly HabitTrackingService _service = service;
+    private readonly ConsoleView _view = view;
+
+    public void Run()
     {
+
     }
 }
