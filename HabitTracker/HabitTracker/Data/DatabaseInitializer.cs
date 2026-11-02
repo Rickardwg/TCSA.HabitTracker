@@ -3,9 +3,9 @@ using Microsoft.Data.Sqlite;
 
 namespace HabitTracker.Data;
 
-internal class DatabaseInitializer
+internal class DatabaseInitializer(string connectionString)
 {
-    private readonly string _connectionString = "Data Source=habittracker.db;Foreign Keys=True";
+    private readonly string _connectionString = connectionString;
 
     public void Initialize()
     {

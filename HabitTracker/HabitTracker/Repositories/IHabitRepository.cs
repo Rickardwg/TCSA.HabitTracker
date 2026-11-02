@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using HabitTracker.Models;
 
-namespace HabitTracker.Repositories
+namespace HabitTracker.Repositories;
+
+internal interface IHabitRepository
 {
-    internal class IHabitRepository
-    {
-    }
+    public IReadOnlyList<Habit> GetAll();
 }
