@@ -1,3 +1,4 @@
+using HabitTracker.Models;
 using HabitTracker.Services;
 using HabitTracker.Views;
 
@@ -10,6 +11,7 @@ internal class ApplicationController(HabitTrackingService service, ConsoleView v
 
     public void Run()
     {
-
+        IReadOnlyList<Habit> habits = _service.GetAllHabits();
+        _view.DisplayHabits(habits);
     }
 }
