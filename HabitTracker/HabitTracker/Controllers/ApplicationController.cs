@@ -12,6 +12,23 @@ internal class ApplicationController(HabitTrackingService service, ConsoleView v
     public void Run()
     {
         IReadOnlyList<Habit> habits = _service.GetAllHabits();
-        _view.DisplayHabits(habits);
+
+        while (true)
+        {
+            MainMenuAction action = _view.ShowMainMenu();
+
+            switch (action)
+            {
+                case MainMenuAction.ViewHabits:
+                    _view.DisplayHabits(habits);
+                    break;
+
+                case MainMenuAction.ViewLogs:
+                    break;
+
+                case MainMenuAction.Exit:
+                    return;
+            }
+        }
     }
 }
