@@ -13,8 +13,8 @@ internal class ConsoleView
             .AddChoices(MainMenuAction.ViewHabits, MainMenuAction.ViewLogs, MainMenuAction.Exit)
             .UseConverter(choice => choice switch
             {
-                MainMenuAction.ViewHabits => "Manage Habits",
-                MainMenuAction.ViewLogs => "Manage Logs",
+                MainMenuAction.ViewHabits => "View Habits",
+                MainMenuAction.ViewLogs => "View Logs",
                 MainMenuAction.Exit => "Exit",
                 _ => throw new InvalidOperationException("Unexpected menu choice.")
             }));
