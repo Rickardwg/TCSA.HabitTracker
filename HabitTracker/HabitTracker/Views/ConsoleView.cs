@@ -5,6 +5,21 @@ namespace HabitTracker.Views;
 
 internal class ConsoleView
 {
+    public MainMenuAction ShowMainMenu()
+    {
+        return AnsiConsole.Prompt(new SelectionPrompt<MainMenuAction>()
+            .Title("[bold cyan]Habit Tracker[/]")
+            .HighlightStyle(new Style(Color.Cyan, decoration: Decoration.Bold))
+            .AddChoices(MainMenuAction.ViewHabits, MainMenuAction.ViewLogs, MainMenuAction.Exit)
+            .UseConverter(choice => choice switch
+            {
+                MainMenuAction.ViewHabits => "Manage Habits",
+                MainMenuAction.ViewLogs => "Manage Logs",
+                MainMenuAction.Exit => "Exit",
+                _ => throw new InvalidOperationException("Unexpected menu choice.")
+            }));
+    }
+
     public void DisplayHabits(IReadOnlyList<Habit> habits, string? statusMessage = null)
     {
         var table = new Table()
